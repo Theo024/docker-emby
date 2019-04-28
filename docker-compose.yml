@@ -1,0 +1,29 @@
+version: "3.7"
+
+networks:
+  traefik:
+    external: true
+  emby:
+    name: emby
+
+volumes:
+  library:
+    external: true
+
+services:
+  emby:
+    image: emby/embyserver:latest
+    restart: always
+    networks:
+      - traefik
+      - emby
+    volumes:
+      - ./config:/config
+      - library:/media
+    labels:
+      - "traefik.docker.network=traefik"
+      - "traefik.enable=true"
+      - "traefik.port=8096"
+      - "traefik.backend=emby"
+      - "traefik.frontend.passHostHeader=true"
+      - "traefik.frontend.rule=Host:${EMBY_DOMAIN}"
